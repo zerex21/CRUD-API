@@ -6,7 +6,8 @@ import "dotenv/config.js"
 import {
     createUser,
     getAllUsers,
-    getUser
+    getUser,
+    updateUser
 } from "./modules/routes.js";
 
 const DEFAULT_API_PORT = 4200
@@ -20,22 +21,32 @@ let server = http
     .createServer((request, resolve) => {
         console.log("Server is running")
         /* console.log(request.url, 'sds') */
-
+        let str = request.url.split('/')
         switch (request.method) {
             case 'GET':
-                let str = request.url.split('/')
-                console.log(checkUUID.test(str[3]))
+
+                /* console.log(checkUUID.test(str[3])) */
                 if (request.url === baseName) {
                     getAllUsers(request, resolve)
                 } else if ( /* (`${baseName}/${checkUUID}`) */ checkUUID.test(str[3])) {
                     getUser(request, resolve, str[3])
-                } else {
+                }
+                /* else if (!checkUUID.test(str[3])) {
+                                   resolve.end("Invalid UUID!")
+                               } */
+                else {
                     resolve.end("Wrong way!")
                 }
                 break;
             case 'POST':
                 if (request.url === baseName) {
                     createUser(request, resolve)
+                }
+                break;
+            case 'PUT':
+                if ( /* request.url === baseName */ checkUUID.test(str[3])) {
+                    updateUser(request, resolve, str[3])
+                    /*  createUser(request, resolve) */
                 }
                 break;
         }
