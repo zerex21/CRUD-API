@@ -2,22 +2,36 @@ import {
     v4 as uuidv4
 } from 'uuid';
 /* export const users = JSON.stringify([{
-    id: 1,
-    username: 'Oleg',
-    age: 21,
-    hobbies: 'SGHJ, hkjhkh'
+    "username": "Oleg",
+    "age": 21,
+    "hobbies": "SGHJ, hkjhkh"
 }])
  */
 let users = [];
 
-export const createUser = (nameUser, ageUser, hobbiesUser) => {
-    return {
-        id: uuidv4(),
-        username: nameUser,
-        age: ageUser,
-        hobbies: hobbiesUser
-    }
+export const createUser = (request, resolve) => {
+    let body = '';
+    request.on('data', (chunk) => {
+        // Append the data chunk to the 'body' string
+        console.log(chunk)
+        body += chunk.toString();
+    });
+
+    request.on('end', () => {
+        const feedbackData = JSON.parse(body);
+        const userUUID = uuidv4();
+        // Send a simple success message as the response
+        users.push({
+            id: userUUID,
+            ...feedbackData
+        })
+        resolve.writeHead(200, {
+            'Content-Type': 'application/json'
+        });
+        resolve.end(body /* JSON.stringify(body) */ );
+    });
 }
+
 export let getAllUsers = (request, resolve) => {
     if (users.length === 0) {
         return resolve.end("Users don't exist!")
@@ -34,6 +48,7 @@ export let getAllUsers = (request, resolve) => {
 
 export let getUser = (request, resolve, userId) => {
     for (let i = 0; i < users.length; i++) {
+        /* console.log(users[i].id, userId) */
         if (users[i].id === userId) {
             resolve.writeHead(200, {
                 "Content-Type": "application/json"
@@ -45,7 +60,9 @@ export let getUser = (request, resolve, userId) => {
             });
             return resolve.end("This is user doesn't exist!")
         }
-
     }
-
 }
+
+/* export let createUser = (request, resolve) =>{
+
+} */
