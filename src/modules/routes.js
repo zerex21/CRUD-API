@@ -74,9 +74,6 @@ export const updateUser = (request, resolve, userId) => {
                     console.log(chunk)
                     replacementData += chunk.toString();
                 });
-
-
-
                 request.on('end', () => {
                     const feedbackData = JSON.parse(replacementData);
                     /* const userUUID = uuidv4(); */
@@ -86,16 +83,15 @@ export const updateUser = (request, resolve, userId) => {
                          ...feedbackData
                      }) */
                     const index = users.indexOf(users[i]);
-                    users[index] = feedbackData;
+                    users[index] = {
+                        id: users[i].id,
+                        ...feedbackData
+                    };
                     resolve.writeHead(200, {
                         'Content-Type': 'application/json'
                     });
                     resolve.end( /* feedbackData  */ JSON.stringify(feedbackData));
                 });
-
-
-
-
             }
         }
     } else {
@@ -105,6 +101,17 @@ export const updateUser = (request, resolve, userId) => {
         return resolve.end("User doesn't exist!");
     }
 }
-/* export let createUser = (request, resolve) =>{
 
-} */
+export const deleteUser = (request, resolve, userId) => {
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].id === userId) {
+            const index = users.indexOf(users[i]);
+            delete users[index]
+            return resolve.end(`You deleted the User:${users[i]}`);
+        }
+    }
+    resolve.writeHead(404, {
+        "Content-Type": "application/json"
+    });
+    return resolve.end("This is user doesn't exist!")
+}

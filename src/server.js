@@ -5,6 +5,7 @@ import http from "http";
 import "dotenv/config.js"
 import {
     createUser,
+    deleteUser,
     getAllUsers,
     getUser,
     updateUser
@@ -23,8 +24,8 @@ let server = http
         /* console.log(request.url, 'sds') */
         let str = request.url.split('/')
         switch (request.method) {
-            case 'GET':
 
+            case 'GET':
                 /* console.log(checkUUID.test(str[3])) */
                 if (request.url === baseName) {
                     getAllUsers(request, resolve)
@@ -38,17 +39,29 @@ let server = http
                     resolve.end("Wrong way!")
                 }
                 break;
+
             case 'POST':
                 if (request.url === baseName) {
                     createUser(request, resolve)
                 }
                 break;
+
             case 'PUT':
                 if ( /* request.url === baseName */ checkUUID.test(str[3])) {
                     updateUser(request, resolve, str[3])
                     /*  createUser(request, resolve) */
                 }
                 break;
+
+            case 'DELETE':
+                if ( /* request.url === baseName */ checkUUID.test(str[3])) {
+                    /* updateUser(request, resolve, str[3]) */
+                    deleteUser(request, resolve, str[3])
+
+                }
+                break;
+            default:
+                resolve.end("Wrong method!")
         }
 
         /* switch (request.method) {
