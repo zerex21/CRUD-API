@@ -40,13 +40,33 @@ let server = http
                 /* console.log(checkUUID.test(str[3])) */
                 if (request.url === baseName) {
                     getAllUsers(request, resolve)
-                } else if ( /* (`${baseName}/${checkUUID}`) */ checkPath.test(str[3])) {
+                } else if ( /* (`${baseName}/${checkUUID}`) */ checkUUID.test(str[3])) {
                     getUser(request, resolve, str[3])
+                } else if (!(`/${str[1]}/${str[2]}`.match(checkPath))) {
+
+                    resolve.writeHead(404, {
+                        'Content-Type': 'text/plain'
+                    });
+                    resolve.end("Wrong path!")
+                } else if (!checkUUID.test(str[3])) {
+
+                    resolve.writeHead(400, {
+                        'Content-Type': 'text/plain'
+                    });
+                    resolve.end("ID user is invalid!");
                 }
-                /* else if (!checkUUID.test(str[3])) {
-                                   resolve.end("Invalid UUID!")
-                               } */
-                else {
+                /* else {
+                                    resolve.writeHead(404, {
+                                        'Content-Type': 'text/plain'
+                                    });
+                                    resolve.end("Wrong path!")
+                                } */
+                break;
+
+            case 'POST':
+                if (request.url === baseName) {
+                    createUser(request, resolve)
+                } else /* if (!checkUUID.test(str[3])) */ {
                     resolve.writeHead(404, {
                         'Content-Type': 'text/plain'
                     });
@@ -54,26 +74,28 @@ let server = http
                 }
                 break;
 
-            case 'POST':
-                if (request.url === baseName) {
-                    createUser(request, resolve)
-                } else if (!checkUUID.test(str[3])) {
-                    resolve.writeHead(400, {
-                        'Content-Type': 'text/plain'
-                    });
-                    resolve.end("ID user is invalid!");
-                }
-                break;
-
             case 'PUT':
                 if (checkUUID.test(str[3])) {
                     updateUser(request, resolve, str[3])
+                } else if (!(`/${str[1]}/${str[2]}`.match(checkPath))) {
+
+                    resolve.writeHead(404, {
+                        'Content-Type': 'text/plain'
+                    });
+                    resolve.end("Wrong path!")
                 } else if (!checkUUID.test(str[3])) {
+
                     resolve.writeHead(400, {
                         'Content-Type': 'text/plain'
                     });
                     resolve.end("ID user is invalid!");
                 }
+                /*  else if (!checkUUID.test(str[3])) {
+                                    resolve.writeHead(400, {
+                                        'Content-Type': 'text/plain'
+                                    });
+                                    resolve.end("ID user is invalid!");
+                                } */
                 break;
 
             case 'DELETE':
@@ -94,7 +116,6 @@ let server = http
                     });
                     resolve.end("ID user is invalid!");
                 }
-
                 break;
             default:
                 resolve.writeHead(404, {
