@@ -1,6 +1,10 @@
 import {
     v4 as uuidv4
 } from 'uuid';
+import {
+    validateUser,
+    validateUpdateUser
+} from './usersValidation.js';
 /* export const users = JSON.stringify([{
     "username": "Oleg",
     "age": 21,
@@ -20,15 +24,24 @@ export const createUser = (request, resolve) => {
     request.on('end', () => {
         const feedbackData = JSON.parse(body);
         const userUUID = uuidv4();
+
+        if (validateUser(feedbackData)) {
+            resolve.writeHead(400, {
+                'Content-Type': 'application/json'
+            });
+            resolve.end('Invalid User data')
+        } else {
+            users.push({
+                id: userUUID,
+                ...feedbackData
+            })
+            resolve.writeHead(200, {
+                'Content-Type': 'application/json'
+            });
+            resolve.end(body /* JSON.stringify(body) */ );
+        }
         // Send a simple success message as the response
-        users.push({
-            id: userUUID,
-            ...feedbackData
-        })
-        resolve.writeHead(200, {
-            'Content-Type': 'application/json'
-        });
-        resolve.end(body /* JSON.stringify(body) */ );
+
     });
 }
 
@@ -95,21 +108,23 @@ export const updateUser = (request, resolve, userId) => {
             });
             request.on('end', () => {
                 const feedbackData = JSON.parse(replacementData);
-                /* const userUUID = uuidv4(); */
-                // Send a simple success message as the response
-                /*  users.push({
-                     id: userUUID,
-                     ...feedbackData
-                 }) */
-                const index = users.indexOf(users[i]);
-                users[index] = {
-                    id: users[i].id,
-                    ...feedbackData
-                };
-                resolve.writeHead(200, {
-                    'Content-Type': 'application/json'
-                });
-                resolve.end( /* feedbackData  */ JSON.stringify(feedbackData));
+
+                if (validateUpdateUser(feedbackData)) {
+                    resolve.writeHead(400, {
+                        'Content-Type': 'application/json'
+                    });
+                    resolve.end('Invalid User data')
+                } else {
+                    const index = users.indexOf(users[i]);
+                    users[index] = {
+                        id: users[i].id,
+                        ...feedbackData
+                    };
+                    resolve.writeHead(200, {
+                        'Content-Type': 'application/json'
+                    });
+                    resolve.end( /* feedbackData  */ JSON.stringify(feedbackData));
+                }
             });
         }
     }
