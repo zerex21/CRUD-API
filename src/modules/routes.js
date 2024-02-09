@@ -64,8 +64,15 @@ export const getUser = (request, resolve, userId) => {
 
 
 export const updateUser = (request, resolve, userId) => {
-    if (users.length >= 1) {
 
+    /*   if (users.length < 1) {
+          resolve.writeHead(404, {
+              'Content-Type': 'text/plain'
+          });
+          resolve.end("This is user doesn't exist!")
+      } */
+
+    if (users.length >= 1) {
         for (let i = 0; i < users.length; i++) {
             if (users[i].id === userId) {
                 let replacementData = '';
@@ -103,15 +110,26 @@ export const updateUser = (request, resolve, userId) => {
 }
 
 export const deleteUser = (request, resolve, userId) => {
+    if (users.length < 1) {
+        resolve.writeHead(404, {
+            'Content-Type': 'text/plain'
+        });
+        resolve.end("This is user doesn't exist!")
+    }
     for (let i = 0; i < users.length; i++) {
         if (users[i].id === userId) {
-            const index = users.indexOf(users[i]);
-            delete users[index]
-            return resolve.end(`You deleted the User:${users[i]}`);
+            const updatedProducts = users.filter((product) => product.id !== userId)
+            users = updatedProducts;
+            resolve.writeHead(204, {
+                'Content-Type': 'text/plain'
+            });
+            resolve.end(`You deleted the User:${users[i]}`);
+        } else {
+            resolve.writeHead(404, {
+                'Content-Type': 'text/plain'
+            });
+            resolve.end("This is user doesn't exist!")
         }
     }
-    resolve.writeHead(404, {
-        "Content-Type": "application/json"
-    });
-    return resolve.end("This is user doesn't exist!")
+
 }
