@@ -119,10 +119,11 @@ export const updateUser = (request, resolve, userId) => {
                 'Content-Type': 'text/plain'
             });
             return resolve.end("This is user doesn't exist!")
-        }
+        } else {
+            const updatedUsers = users.filter((product) => product.id !== userId)
+            const checkUsers = users.filter((product) => product.id === userId)
 
-        for (let i = 0; i < users.length; i++) {
-            if (users[i].id === userId) {
+            if (checkUsers.length >= 1) {
                 let replacementData = '';
                 request.on('data', (chunk) => {
                     replacementData += chunk.toString();
@@ -130,16 +131,17 @@ export const updateUser = (request, resolve, userId) => {
                 request.on('end', () => {
                     try {
                         const feedbackData = JSON.parse(replacementData);
-
+                        console.log(feedbackData)
                         if (validateUpdateUser(feedbackData)) {
                             resolve.writeHead(400, {
                                 'Content-Type': 'application/json'
                             });
-                            resolve.end('Invalid User data')
+                            resolve.end('Invalid User datfffa')
                         } else {
-                            const index = users.indexOf(users[i]);
+                            const index = users.indexOf(...checkUsers);
+                            console.log(index)
                             users[index] = {
-                                id: users[i].id,
+                                id: checkUsers[0].id,
                                 ...feedbackData
                             };
                             resolve.writeHead(200, {
@@ -151,11 +153,56 @@ export const updateUser = (request, resolve, userId) => {
                         resolve.writeHead(400, {
                             'Content-Type': 'application/json'
                         });
-                        return resolve.end('Invalid User data')
+                        return resolve.end('Invaaaalid User data')
                     }
                 });
+            } else {
+                resolve.writeHead(404, {
+                    'Content-Type': 'text/plain'
+                });
+                return resolve.end("This is user doesn't exist!")
             }
+
+            /*
+                        for (let i = 0; i < users.length; i++) {
+                            if (users[i].id === userId) {
+                                let replacementData = '';
+                                request.on('data', (chunk) => {
+                                    replacementData += chunk.toString();
+                                });
+                                request.on('end', () => {
+                                    try {
+                                        const feedbackData = JSON.parse(replacementData);
+
+                                        if (validateUpdateUser(feedbackData)) {
+                                            resolve.writeHead(400, {
+                                                'Content-Type': 'application/json'
+                                            });
+                                            resolve.end('Invalid User data')
+                                        } else {
+                                            console.log(users[i])
+                                            const index = users.indexOf(users[i]);
+                                            users[index] = {
+                                                id: users[i].id,
+                                                ...feedbackData
+                                            };
+                                            resolve.writeHead(200, {
+                                                'Content-Type': 'application/json'
+                                            });
+                                            return resolve.end(`User was changed ${ JSON.stringify(feedbackData)}`);
+                                        }
+                                    } catch {
+                                        resolve.writeHead(400, {
+                                            'Content-Type': 'application/json'
+                                        });
+                                        return resolve.end('Invalid User data')
+                                    }
+                                });
+                            }
+                        } */
         }
+
+
     } catch {
         serverErrorRespond(resolve)
     }
