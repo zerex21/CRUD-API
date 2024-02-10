@@ -23,6 +23,10 @@ export const validateUpdateUser = (user) => {
         return 'Username must be a string';
     }
 
+    if (!user.username || user.age === undefined || !user.hobbies) {
+        return 'Missing required fields';;
+    }
+
     if (user.age !== undefined && typeof user.age !== 'number') {
         return 'Age must be a number';
     }

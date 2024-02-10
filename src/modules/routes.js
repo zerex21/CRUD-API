@@ -22,16 +22,35 @@ export const getUser = (request, resolve, userId) => {
         resolve.writeHead(404, {
             'Content-Type': 'text/plain'
         });
-        resolve.end("This is user doesn't exist!")
+        return resolve.end("This is user doesn't exist!")
     } else {
-        for (let i = 0; i < users.length; i++) {
+        let checkUser = users.filter(item => item.id === userId)
+        /*   console.log(checkUser.length) */
+        if (checkUser.length >= 1) {
+            resolve.writeHead(200, {
+                "Content-Type": "application/json"
+            });
+            resolve.end(JSON.stringify(checkUser))
+        } else {
+            resolve.writeHead(404, {
+                'Content-Type': 'text/plain'
+            });
+            resolve.end("This is user doesn't exist!")
+        }
+        /* for (let i = 0; i < users.length; i++) {
+            console.log(users[i].id, userId)
             if (users[i].id === userId) {
                 resolve.writeHead(200, {
                     "Content-Type": "application/json"
                 });
-                resolve.end(JSON.stringify(users[i]))
+                return resolve.end(JSON.stringify(users[i]))
+            } else {
+                resolve.writeHead(404, {
+                    'Content-Type': 'text/plain'
+                });
+                return resolve.end("This is user doesn't exist!")
             }
-        }
+        } */
     }
 }
 
@@ -46,7 +65,7 @@ export const getAllUsers = (request, resolve) => {
         resolve.writeHead(200, {
             "Content-Type": "application/json"
         });
-        resolve.end(JSON.stringify(users))
+        return resolve.end(JSON.stringify(users))
     } catch {
         serverErrorRespond(resolve)
     }
@@ -69,7 +88,7 @@ export const createUser = (request, resolve) => {
                     resolve.writeHead(400, {
                         'Content-Type': 'application/json'
                     });
-                    resolve.end('Invalid User data')
+                    return resolve.end('Invalid User data')
                 } else {
                     users.push({
                         id: userUUID,
@@ -78,13 +97,13 @@ export const createUser = (request, resolve) => {
                     resolve.writeHead(201, {
                         'Content-Type': 'application/json'
                     });
-                    resolve.end(`User was created: ${body}` /* JSON.stringify(body) */ );
+                    return resolve.end(`User was created: ${body}` /* JSON.stringify(body) */ );
                 }
             } catch {
                 resolve.writeHead(400, {
                     'Content-Type': 'application/json'
                 });
-                resolve.end('Invalid User data')
+                return resolve.end('Invalid User data')
             }
         });
     } catch {
@@ -94,67 +113,80 @@ export const createUser = (request, resolve) => {
 }
 
 export const updateUser = (request, resolve, userId) => {
-
-    if (users.length < 1) {
-        resolve.writeHead(404, {
-            'Content-Type': 'text/plain'
-        });
-        resolve.end("This is user doesn't exist!")
-    }
-
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].id === userId) {
-            let replacementData = '';
-            request.on('data', (chunk) => {
-                replacementData += chunk.toString();
-            });
-            request.on('end', () => {
-                const feedbackData = JSON.parse(replacementData);
-
-                if (validateUpdateUser(feedbackData)) {
-                    resolve.writeHead(400, {
-                        'Content-Type': 'application/json'
-                    });
-                    resolve.end('Invalid User data')
-                } else {
-                    const index = users.indexOf(users[i]);
-                    users[index] = {
-                        id: users[i].id,
-                        ...feedbackData
-                    };
-                    resolve.writeHead(200, {
-                        'Content-Type': 'application/json'
-                    });
-                    resolve.end( /* feedbackData  */ JSON.stringify(feedbackData));
-                }
-            });
-        }
-    }
-
-}
-
-export const deleteUser = (request, resolve, userId) => {
-    if (users.length === 0) {
-        resolve.writeHead(404, {
-            'Content-Type': 'text/plain'
-        });
-        resolve.end("This is user doesn't exist!")
-    }
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].id === userId) {
-            const updatedProducts = users.filter((product) => product.id !== userId)
-            resolve.writeHead(204, {
-                'Content-Type': 'text/plain'
-            });
-            resolve.end(`You deleted the User`);
-
-            users = updatedProducts;
-        } else {
+    try {
+        if (users.length < 1) {
             resolve.writeHead(404, {
                 'Content-Type': 'text/plain'
             });
-            resolve.end("This is user doesn't exist!")
+            return resolve.end("This is user doesn't exist!")
         }
+
+        for (let i = 0; i < users.length; i++) {
+            if (users[i].id === userId) {
+                let replacementData = '';
+                request.on('data', (chunk) => {
+                    replacementData += chunk.toString();
+                });
+                request.on('end', () => {
+                    try {
+                        const feedbackData = JSON.parse(replacementData);
+
+                        if (validateUpdateUser(feedbackData)) {
+                            resolve.writeHead(400, {
+                                'Content-Type': 'application/json'
+                            });
+                            resolve.end('Invalid User data')
+                        } else {
+                            const index = users.indexOf(users[i]);
+                            users[index] = {
+                                id: users[i].id,
+                                ...feedbackData
+                            };
+                            resolve.writeHead(200, {
+                                'Content-Type': 'application/json'
+                            });
+                            return resolve.end(`User was changed ${ JSON.stringify(feedbackData)}`);
+                        }
+                    } catch {
+                        resolve.writeHead(400, {
+                            'Content-Type': 'application/json'
+                        });
+                        return resolve.end('Invalid User data')
+                    }
+                });
+            }
+        }
+    } catch {
+        serverErrorRespond(resolve)
+    }
+}
+
+export const deleteUser = (request, resolve, userId) => {
+    try {
+        if (users.length === 0) {
+            resolve.writeHead(404, {
+                'Content-Type': 'text/plain'
+            });
+            return resolve.end("This is user doesn't exist!")
+        } else {
+            const updatedUsers = users.filter((product) => product.id !== userId)
+            const checkUsers = users.filter((product) => product.id === userId)
+            if (checkUsers.length >= 1) {
+                resolve.writeHead(204, {
+                    'Content-Type': 'text/plain'
+                });
+                resolve.end(`You deleted the User`);
+
+                users = updatedUsers;
+            } else {
+                resolve.writeHead(404, {
+                    'Content-Type': 'text/plain'
+                });
+                return resolve.end("This is user doesn't exist!")
+            }
+        }
+    } catch {
+        serverErrorRespond(resolve)
     }
 
 }

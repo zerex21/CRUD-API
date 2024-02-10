@@ -68,7 +68,7 @@ let server = http
                 break;
 
             case 'DELETE':
-                console.log(`/${str[1]}/${str[2]}`, request.url)
+                /* console.log(`/${str[1]}/${str[2]}`, request.url) */
                 if ( /* request.url === baseName */ checkUUID.test(str[3])) {
                     deleteUser(request, resolve, str[3])
 
