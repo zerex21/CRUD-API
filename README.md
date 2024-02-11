@@ -29,7 +29,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
--If you chosen :prod will be created folder build and then file index.js.You should open terminal write "cd build" and then "node index" and after you can open postman(example) for check app.
+-If you chosen :prod will be created folder dist and then file index.js.You should open terminal write "cd dist" and then "node index" and after you can open postman(example) for check app.
 ***
 
 ## Implementation details
