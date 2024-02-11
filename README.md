@@ -33,7 +33,7 @@ if you chosen :prod will be created folder build and then file index.js.You shou
 
 ## Implementation details
 
-Implemented endpoint `api/users`:
+1. Implemented endpoint `api/users`:
     - **GET** `api/users` is used to get all persons
         - Server should answer with `status code` **200** and all users records
     - **GET** `api/users/{userId}`
@@ -51,7 +51,7 @@ Implemented endpoint `api/users`:
         - Server should answer with `status code` **204** if the record is found and deleted
         - Server should answer with `status code` **400** and corresponding message if `userId` is invalid (not `uuid`)
         - Server should answer with `status code` **404** and corresponding message if record with `id === userId` doesn't exist
-Users are stored as `objects` that have following properties:
+2. Users are stored as `objects` that have following properties:
     - `id` — unique identifier (`string`, `uuid`) generated on server side
     - `username` — user's name (`string`, **required**)
     - `age` — user's age (`number`, **required**)
