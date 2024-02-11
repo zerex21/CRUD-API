@@ -8,7 +8,8 @@
 ```
 $ git clone https://github.com/zerex21/CRUD-API.git
 ```
-or just download archive from branch "develop" and open in VS Code
+
+-or just download archive from branch "develop" and open in VS Code
 
 ```
 $ npm install
@@ -16,7 +17,7 @@ $ npm install
 ***
 #### Configuration
 
-Server post for listening request can be configured as environment variable (.env)
+-Server post for listening request can be configured as environment variable (.env)
 ***
 #### Scripts
 
@@ -28,7 +29,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-if you chosen :prod will be created folder build and then file index.js.You should open terminal write "cd build" and then "node index" and after you can open postman(example) for check app.
+-If you chosen :prod will be created folder build and then file index.js.You should open terminal write "cd build" and then "node index" and after you can open postman(example) for check app.
 ***
 
 ## Implementation details
