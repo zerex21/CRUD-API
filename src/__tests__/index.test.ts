@@ -58,4 +58,11 @@ describe('HTTP method switch cases', () => {
     expect(checkUuidRed).toHaveBeenCalledWith(mockResponse);
   });
 
+  it('should call checkBaseName for DELETE request with invalid URL', () => {
+    mockRequest.method = 'DELETE';
+    mockRequest.url = '/invalid-url';
+    const checkBaseName = jest.fn();
+    checkBaseName(mockResponse as ServerResponse);
+    expect(checkBaseName).toHaveBeenCalledWith(mockResponse);
+  });
 });

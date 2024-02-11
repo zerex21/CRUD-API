@@ -28,6 +28,9 @@ $ npm run start:dev
 ```
 $ npm run start:prod
 ```
+```
+$ npm run test
+```
 
 -If you chosen :prod will be created folder dist and then file index.js.You should open terminal write "cd dist" and then "node index" and after you can open postman(example) for check app.
 ***
@@ -57,3 +60,4 @@ $ npm run start:prod
     - `username` — user's name (`string`, **required**)
     - `age` — user's age (`number`, **required**)
     - `hobbies` — user's hobbies (`array` of `strings` or empty `array`, **required**)
+3. There are 7 tests for API (for methods GET, POST, PUT, DELETE)
