@@ -4,27 +4,37 @@ import {
 import {
     validateUser,
     validateUpdateUser
-} from './usersValidation.js';
+} from './usersValidation';
 import {
     serverErrorRespond
-} from './checkCorr.js';
+} from './checkCorr';
+import { IUser } from '../types/types';
 /* export const users = JSON.stringify([{
     "username": "Oleg",
     "age": 21,
     "hobbies": "SGHJ, hkjhkh"
 }])
  */
-let users = [];
+import { ServerResponse, IncomingMessage } from "http";
+let users:IUser[] = [];
+
+interface User {
+    length: number;
+    id: string;
+    username: string;
+    age: number;
+    hobbies: string[];
+}
 
 
-export const getUser = (request, resolve, userId) => {
+export const getUser = (request:IncomingMessage, resolve:ServerResponse, userId:string) => {
     if (users.length < 1) {
         resolve.writeHead(404, {
             'Content-Type': 'text/plain'
         });
         return resolve.end("This is user doesn't exist!")
     } else {
-        let checkUser = users.filter(item => item.id === userId)
+        let checkUser = users.filter!(item => item.id === userId)
         /*   console.log(checkUser.length) */
         if (checkUser.length >= 1) {
             resolve.writeHead(200, {
@@ -54,9 +64,9 @@ export const getUser = (request, resolve, userId) => {
     }
 }
 
-export const getAllUsers = (request, resolve) => {
+export const getAllUsers = (request:IncomingMessage, resolve:ServerResponse) => {
     try {
-        if (users.length === 0) {
+        if ( users === undefined || users.length === 0) {
             resolve.writeHead(404, {
                 "Content-Type": "application/json"
             });
@@ -72,7 +82,7 @@ export const getAllUsers = (request, resolve) => {
 
 }
 
-export const createUser = (request, resolve) => {
+export const createUser = (request:IncomingMessage, resolve:ServerResponse) => {
     try {
         let body = '';
         request.on('data', (chunk) => {
@@ -90,7 +100,7 @@ export const createUser = (request, resolve) => {
                     });
                     return resolve.end('Invalid User data')
                 } else {
-                    users.push({
+                    users.push!({
                         id: userUUID,
                         ...feedbackData
                     })
@@ -112,7 +122,7 @@ export const createUser = (request, resolve) => {
 
 }
 
-export const updateUser = (request, resolve, userId) => {
+export const updateUser = (request:IncomingMessage, resolve:ServerResponse, userId:string) => {
     try {
         if (users.length < 1) {
             resolve.writeHead(404, {
@@ -120,8 +130,8 @@ export const updateUser = (request, resolve, userId) => {
             });
             return resolve.end("This is user doesn't exist!")
         } else {
-            const updatedUsers = users.filter((product) => product.id !== userId)
-            const checkUsers = users.filter((product) => product.id === userId)
+            const updatedUsers = users.filter!((product) => product.id !== userId)
+            const checkUsers:IUser[] = users.filter!((product: User) => product.id === userId) as unknown as IUser[];
 
             if (checkUsers.length >= 1) {
                 let replacementData = '';
@@ -131,15 +141,15 @@ export const updateUser = (request, resolve, userId) => {
                 request.on('end', () => {
                     try {
                         const feedbackData = JSON.parse(replacementData);
-                        console.log(feedbackData)
+                        /* console.log(feedbackData) */
                         if (validateUpdateUser(feedbackData)) {
                             resolve.writeHead(400, {
                                 'Content-Type': 'application/json'
                             });
-                            resolve.end('Invalid User datfffa')
+                            resolve.end('Invalid User data')
                         } else {
-                            const index = users.indexOf(...checkUsers);
-                            console.log(index)
+                            const index = users.indexOf(checkUsers[0]) ; /***********Было users.indexOf(...checkUsers)  */
+                           /*  console.log(index) */
                             users[index] = {
                                 id: checkUsers[0].id,
                                 ...feedbackData
@@ -153,7 +163,7 @@ export const updateUser = (request, resolve, userId) => {
                         resolve.writeHead(400, {
                             'Content-Type': 'application/json'
                         });
-                        return resolve.end('Invaaaalid User data')
+                        return resolve.end('Invalid User data')
                     }
                 });
             } else {
@@ -208,7 +218,7 @@ export const updateUser = (request, resolve, userId) => {
     }
 }
 
-export const deleteUser = (request, resolve, userId) => {
+export const deleteUser = (request:IncomingMessage, resolve:ServerResponse, userId:string) => {
     try {
         if (users.length === 0) {
             resolve.writeHead(404, {
@@ -216,8 +226,8 @@ export const deleteUser = (request, resolve, userId) => {
             });
             return resolve.end("This is user doesn't exist!")
         } else {
-            const updatedUsers = users.filter((product) => product.id !== userId)
-            const checkUsers = users.filter((product) => product.id === userId)
+            const updatedUsers = users.filter!((product) => product.id !== userId)
+            const checkUsers = users.filter!((product) => product.id === userId)
             if (checkUsers.length >= 1) {
                 resolve.writeHead(204, {
                     'Content-Type': 'text/plain'

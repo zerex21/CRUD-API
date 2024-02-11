@@ -1,4 +1,12 @@
-export const validateUser = (user) => {
+import { IUser } from "../types/types";
+
+interface User {
+    username: string;
+    age: number;
+    hobbies: string[];
+}
+
+export const validateUser = (user:User): string | null => {
     if (!user.username || user.age === undefined || !user.hobbies) {
         return 'Missing required fields';
     }
@@ -18,7 +26,7 @@ export const validateUser = (user) => {
     return null;
 }
 
-export const validateUpdateUser = (user) => {
+export const validateUpdateUser = (user:User): string | null => {
     if (user.username !== undefined && typeof user.username !== 'string') {
         return 'Username must be a string';
     }

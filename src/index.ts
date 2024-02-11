@@ -2,22 +2,22 @@ import http from "http";
 /* import {
     users
 } from "./modules/users.js"; */
-import "dotenv/config.js"
+import "dotenv/config"
 import {
     createUser,
     deleteUser,
     getAllUsers,
     getUser,
     updateUser
-} from "./modules/routes.js";
+} from "./modules/routes.ts";
 import {
     url
 } from "inspector";
 import {
     checkBaseName,
     checkUuidRed
-} from "./modules/checkCorr.js";
-
+} from "./modules/checkCorr.ts";
+import { ServerResponse, IncomingMessage } from "http";
 
 
 const DEFAULT_API_PORT = 4200
@@ -30,20 +30,24 @@ const checkUUID = /^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-
 const checkPath = /^\/api\/users\/?$/
 
 let server = http
-    .createServer((request, resolve) => {
+    .createServer((request:IncomingMessage, resolve:ServerResponse) => {
         console.log("Server is running")
-        let str = request.url.split('/')
+        /* let str:string[];
+        if(request.url){ */
+        let str = request.url!.split('/')
+        /* } */
+
         switch (request.method) {
 
             case 'GET':
 
                 if (request.url === baseName) {
                     getAllUsers(request, resolve)
-                } else if ( /* (`${baseName}/${checkUUID}`) */ checkUUID.test(str[3])) {
-                    getUser(request, resolve, str[3])
-                } else if (!(`/${str[1]}/${str[2]}`.match(checkPath))) {
+                } else if ( /* (`${baseName}/${checkUUID}`) */ checkUUID.test(str![3])) {
+                    getUser(request, resolve, str![3])
+                } else if (!(`/${str![1]}/${str![2]}`.match(checkPath))) {
                     checkBaseName(resolve)
-                } else if (!checkUUID.test(str[3])) {
+                } else if (!checkUUID.test(str![3])) {
                     checkUuidRed(resolve)
                 }
                 break;
@@ -57,11 +61,11 @@ let server = http
                 break;
 
             case 'PUT':
-                if (checkUUID.test(str[3])) {
-                    updateUser(request, resolve, str[3])
-                } else if (!(`/${str[1]}/${str[2]}`.match(checkPath))) {
+                if (checkUUID.test(str![3])) {
+                    updateUser(request, resolve, str![3])
+                } else if (!(`/${str![1]}/${str![2]}`.match(checkPath))) {
                     checkBaseName(resolve)
-                } else if (!checkUUID.test(str[3])) {
+                } else if (!checkUUID.test(str![3])) {
                     checkUuidRed(resolve)
                 }
 
@@ -69,12 +73,12 @@ let server = http
 
             case 'DELETE':
                 /* console.log(`/${str[1]}/${str[2]}`, request.url) */
-                if ( /* request.url === baseName */ checkUUID.test(str[3])) {
-                    deleteUser(request, resolve, str[3])
+                if ( /* request.url === baseName */ checkUUID.test(str![3])) {
+                    deleteUser(request, resolve, str![3])
 
-                } else if (!(`/${str[1]}/${str[2]}`.match(checkPath))) {
+                } else if (!(`/${str![1]}/${str![2]}`.match(checkPath))) {
                     checkBaseName(resolve)
-                } else if (!checkUUID.test(str[3])) {
+                } else if (!checkUUID.test(str![3])) {
                     checkUuidRed(resolve)
                 }
                 break;
