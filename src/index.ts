@@ -9,14 +9,14 @@ import {
     getAllUsers,
     getUser,
     updateUser
-} from "./modules/routes.ts";
+} from "./modules/routes";
 import {
     url
 } from "inspector";
 import {
     checkBaseName,
     checkUuidRed
-} from "./modules/checkCorr.ts";
+} from "./modules/checkCorr";
 import { ServerResponse, IncomingMessage } from "http";
 
 
